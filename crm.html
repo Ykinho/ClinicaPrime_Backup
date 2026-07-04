@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Prime — CRM de Leads | Sofia IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --gold-300:#F0D080;--gold-400:#D4A017;--gold-500:#C9A84C;--gold-600:#A88734;
+        --dark-950:#080B12;--dark-900:#0C1018;--dark-850:#111520;--dark-800:#161B2A;
+        --dark-750:#1C2235;--dark-700:#222A3F;--dark-600:#2D3555;--dark-500:#3A4470;
+        --light-300:#E2E6F0;--light-400:#C4CBDE;--light-500:#9BA5C0;
+        --green-400:#34D399;--green-500:#10B981;
+        --red-400:#F87171;--blue-400:#60A5FA;--orange-400:#FB923C;--purple-400:#A78BFA;
+        --border:1px solid rgba(255,255,255,0.06);
+        --font:'Plus Jakarta Sans',sans-serif;--font-body:'Inter',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:var(--dark-950);color:#E8EBF4;font-family:var(--font-body);font-size:14px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    button{cursor:pointer;border:none;background:none;font-family:inherit}
+    ::-webkit-scrollbar{width:4px;height:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--dark-600);border-radius:10px}
+
+    /* TOPBAR */
+    .topbar{display:flex;align-items:center;gap:16px;padding:0 24px;height:60px;background:var(--dark-900);border-bottom:var(--border);position:sticky;top:0;z-index:100}
+    .topbar-logo{display:flex;align-items:center;gap:10px}
+    .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold-600),var(--gold-300));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-weight:800;color:#080B12;font-size:15px}
+    .logo-text{font-family:var(--font);font-size:14px;font-weight:700;color:#fff}
+    .logo-sub{font-size:11px;color:var(--gold-500)}
+    .topbar-nav{display:flex;align-items:center;gap:4px;margin-left:24px}
+    .nav-tab{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--light-500);transition:all .15s}
+    .nav-tab:hover{background:var(--dark-800);color:#fff}
+    .nav-tab.active{background:rgba(201,168,76,.12);color:var(--gold-300)}
+    .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .kpi-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:600;border:var(--border);background:var(--dark-800)}
+    .btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;transition:all .15s}
+    .btn-gold{background:linear-gradient(135deg,var(--gold-500),var(--gold-400));color:#080B12}
+    .btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+    .btn-ghost{background:var(--dark-800);color:var(--light-400);border:var(--border)}
+    .btn-ghost:hover{background:var(--dark-700);color:#fff}
+
+    /* KANBAN */
+    .kanban-wrap{padding:24px;overflow-x:auto;min-height:calc(100vh - 60px)}
+    .kanban-board{display:flex;gap:16px;align-items:flex-start;min-width:max-content}
+    .kanban-col{width:300px;min-width:300px;display:flex;flex-direction:column;gap:12px}
+    .col-header{padding:14px 16px;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:space-between}
+    .col-title{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:13px;font-weight:700}
+    .col-count{font-size:12px;font-weight:700;padding:2px 8px;border-radius:100px}
+    .col-body{background:var(--dark-850);border:var(--border);border-radius:0 0 14px 14px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:120px;transition:background .15s}
+    .col-body.drag-over{background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.3)}
+
+    /* Cores das colunas */
+    .col-novo .col-header{background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15)}
+    .col-novo .col-title{color:var(--blue-400)}
+    .col-novo .col-count{background:rgba(96,165,250,.15);color:var(--blue-400)}
+    .col-contato .col-header{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.15)}
+    .col-contato .col-title{color:var(--orange-400)}
+    .col-contato .col-count{background:rgba(251,146,60,.15);color:var(--orange-400)}
+    .col-agendado .col-header{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.15)}
+    .col-agendado .col-title{color:var(--purple-400)}
+    .col-agendado .col-count{background:rgba(167,139,250,.15);color:var(--purple-400)}
+    .col-realizado .col-header{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.15)}
+    .col-realizado .col-title{color:var(--green-400)}
+    .col-realizado .col-count{background:rgba(52,211,153,.15);color:var(--green-400)}
+    .col-perdido .col-header{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.15)}
+    .col-perdido .col-title{color:var(--red-400)}
+    .col-perdido .col-count{background:rgba(248,113,113,.15);color:var(--red-400)}
+
+    /* CARD DE LEAD */
+    .lead-card{background:var(--dark-800);border:var(--border);border-radius:12px;padding:14px;cursor:grab;transition:all .2s;position:relative;animation:cardIn .3s ease}
+    .lead-card:active{cursor:grabbing;transform:rotate(1.5deg) scale(1.02);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+    .lead-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
+    @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .card-name{font-family:var(--font);font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .card-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--dark-600),var(--dark-500));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-300);flex-shrink:0}
+    .card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+    .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+    .tag-proc{background:rgba(167,139,250,.1);color:var(--purple-400)}
+    .tag-time{background:rgba(201,168,76,.1);color:var(--gold-400)}
+    .tag-hours{background:rgba(155,165,192,.08);color:var(--light-500);font-size:10px}
+    .card-phone{font-size:12px;color:var(--light-400);display:flex;align-items:center;gap:6px;margin-bottom:10px;font-family:monospace}
+    .card-actions{display:flex;gap:6px}
+    .card-btn{flex:1;padding:7px 10px;border-radius:8px;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+    .card-btn-wa{background:rgba(37,211,102,.12);color:#25D366;border:1px solid rgba(37,211,102,.2)}
+    .card-btn-wa:hover{background:rgba(37,211,102,.2)}
+    .card-btn-next{background:rgba(201,168,76,.1);color:var(--gold-400);border:1px solid rgba(201,168,76,.15)}
+    .card-btn-next:hover{background:rgba(201,168,76,.2)}
+    .card-btn-del{background:rgba(248,113,113,.08);color:var(--red-400);border:1px solid rgba(248,113,113,.15);flex:0;padding:7px 10px}
+    .card-btn-del:hover{background:rgba(248,113,113,.15)}
+    .urgency-badge{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%}
+    .urgency-badge.hot{background:var(--red-400);box-shadow:0 0 8px rgba(248,113,113,.6);animation:pulse 1.5s ease-in-out infinite}
+    .urgency-badge.warm{background:var(--orange-400)}
+    .urgency-badge.cool{background:var(--dark-500)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    /* EMPTY STATE */
+    .col-empty{text-align:center;padding:24px 16px;color:var(--dark-500);font-size:12px}
+    .col-empty-icon{font-size:28px;margin-bottom:8px;opacity:.4}
+
+    /* ROI BANNER */
+    .roi-banner{margin:0 24px 20px;background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.2);border-radius:16px;padding:16px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+    .roi-item{display:flex;flex-direction:column;gap:2px}
+    .roi-value{font-family:var(--font);font-size:22px;font-weight:800;color:var(--gold-300)}
+    .roi-label{font-size:11px;color:var(--light-500);font-weight:500}
+    .roi-divider{width:1px;height:36px;background:rgba(201,168,76,.15)}
+    .roi-tip{margin-left:auto;font-size:12px;color:var(--light-500);max-width:260px;line-height:1.5}
+    .roi-tip strong{color:var(--gold-400)}
+
+    /* MODAL DETALHES */
+    .modal-back{position:fixed;inset:0;z-index:500;background:rgba(8,11,18,.85);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal-back.open{display:flex}
+    .modal-box{background:var(--dark-850);border:var(--border);border-radius:20px;width:100%;max-width:480px;overflow:hidden;animation:fadeUp .3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .modal-top{padding:20px 24px;border-bottom:var(--border);display:flex;align-items:center;justify-content:space-between}
+    .modal-top h3{font-family:var(--font);font-size:16px;font-weight:700;color:#fff}
+    .modal-close{width:30px;height:30px;border-radius:8px;background:var(--dark-700);color:var(--light-400);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
+    .modal-close:hover{background:var(--dark-600);color:#fff}
+    .modal-body{padding:24px;display:flex;flex-direction:column;gap:16px}
+    .modal-field{display:flex;flex-direction:column;gap:6px}
+    .modal-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--light-500)}
+    .modal-input{background:var(--dark-800);border:1px solid var(--dark-600);border-radius:10px;padding:10px 14px;color:#E8EBF4;font-size:14px;outline:none;font-family:inherit;transition:border-color .15s}
+    .modal-input:focus{border-color:var(--gold-500);box-shadow:0 0 0 3px rgba(201,168,76,.1)}
+    .modal-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239BA5C0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+    .modal-footer{display:flex;gap:10px;padding:0 24px 24px}
+    .modal-btn-primary{flex:2;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--gold-500),var(--gold-400));color:#080B12;font-family:var(--font);font-size:14px;font-weight:700;transition:all .15s}
+    .modal-btn-primary:hover{filter:brightness(1.1)}
+    .modal-btn-secondary{flex:1;padding:12px;border-radius:12px;background:var(--dark-700);color:var(--light-400);font-size:14px;border:var(--border);transition:all .15s}
+    .modal-btn-secondary:hover{background:var(--dark-600);color:#fff}
+
+    /* TOAST */
+    .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+    .toast{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--dark-800);border:var(--border);border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.4);animation:toastIn .3s ease,toastOut .3s ease 4.7s forwards;min-width:220px}
+    @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+    .toast.success{border-left:3px solid var(--green-400)}
+    .toast.info{border-left:3px solid var(--blue-400)}
+    .toast.warning{border-left:3px solid var(--gold-400)}
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="topbar-logo">
+        <div class="logo-icon">C</div>
+        <div>
+            <div class="logo-text">Clínica Prime</div>
+            <div class="logo-sub">CRM de Leads</div>
+        </div>
+    </div>
+    <div class="topbar-nav">
+        <button class="nav-tab" onclick="location.href='index.html'">💬 Sofia Chat</button>
+        <button class="nav-tab" onclick="location.href='dashboard.html'">📊 Dashboard</button>
+        <button class="nav-tab active">🎯 CRM Pipeline</button>
+    </div>
+    <div class="topbar-right">
+        <div class="kpi-pill" id="pill-total">0 leads</div>
+        <div class="kpi-pill" id="pill-conv" style="color:var(--green-400)">0% conv.</div>
+        <button class="btn btn-ghost" onclick="clearAll()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+            Limpar Perdidos
+        </button>
+        <button class="btn btn-gold" onclick="location.href='index.html'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Novo Lead (Sofia)
+        </button>
+    </div>
+</div>
+
+<!-- ROI BANNER -->
+<div class="roi-banner" id="roi-banner">
+    <div class="roi-item">
+        <div class="roi-value" id="roi-leads">0</div>
+        <div class="roi-label">Leads Capturados</div>
+    </div>
+    <div class="roi-divider"></div>
+    <div class="roi-item">
+        <div class="roi-value" id="roi-conv">0</div>
+        <div class="roi-label">Realizados</div>
+    </div>
+    <div class="roi-divider"></div>
+    <div class="roi-item">
+        <div class="roi-value" id="roi-revenue">R$ 0</div>
+        <div class="roi-label">Receita Potencial (est.)</div>
+    </div>
+    <div class="roi-divider"></div>
+    <div class="roi-item">
+        <div class="roi-value" id="roi-time">0h</div>
+        <div class="roi-label">Horas Economizadas pela Sofia</div>
+    </div>
+    <div class="roi-tip">
+        💡 A Sofia economiza em média <strong>15-20 minutos</strong> por lead qualificado. Procedimentos estéticos têm ticket médio de <strong>R$ 350-800</strong>.
+    </div>
+</div>
+
+<!-- KANBAN BOARD -->
+<div class="kanban-wrap">
+    <div class="kanban-board">
+
+        <!-- NOVO -->
+        <div class="kanban-col">
+            <div class="col-header col-novo" style="border-radius:14px">
+                <div class="col-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    Novo Lead
+                </div>
+                <span class="col-count" id="count-novo">0</span>
+            </div>
+            <div class="col-body" id="col-novo" 
+                 ondragover="onDragOver(event,'novo')" 
+                 ondragleave="onDragLeave(event)" 
+                 ondrop="onDrop(event,'novo')">
+                <div class="col-empty"><div class="col-empty-icon">📥</div>Leads da Sofia aparecem aqui</div>
+            </div>
+        </div>
+
+        <!-- EM CONTATO -->
+        <div class="kanban-col">
+            <div class="col-header col-contato" style="border-radius:14px">
+                <div class="col-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"></path></svg>
+                    Em Contato
+                </div>
+                <span class="col-count" id="count-contato">0</span>
+            </div>
+            <div class="col-body" id="col-contato"
+                 ondragover="onDragOver(event,'contato')"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,'contato')">
+                <div class="col-empty"><div class="col-empty-icon">💬</div>Arraste leads para cá</div>
+            </div>
+        </div>
+
+        <!-- AGENDADO -->
+        <div class="kanban-col">
+            <div class="col-header col-agendado" style="border-radius:14px">
+                <div class="col-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Agendado
+                </div>
+                <span class="col-count" id="count-agendado">0</span>
+            </div>
+            <div class="col-body" id="col-agendado"
+                 ondragover="onDragOver(event,'agendado')"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,'agendado')">
+                <div class="col-empty"><div class="col-empty-icon">📅</div>Consultas marcadas</div>
+            </div>
+        </div>
+
+        <!-- REALIZADO -->
+        <div class="kanban-col">
+            <div class="col-header col-realizado" style="border-radius:14px">
+                <div class="col-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Realizado ✓
+                </div>
+                <span class="col-count" id="count-realizado">0</span>
+            </div>
+            <div class="col-body" id="col-realizado"
+                 ondragover="onDragOver(event,'realizado')"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,'realizado')">
+                <div class="col-empty"><div class="col-empty-icon">🏆</div>Clientes atendidos</div>
+            </div>
+        </div>
+
+        <!-- PERDIDO -->
+        <div class="kanban-col">
+            <div class="col-header col-perdido" style="border-radius:14px">
+                <div class="col-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Perdido
+                </div>
+                <span class="col-count" id="count-perdido">0</span>
+            </div>
+            <div class="col-body" id="col-perdido"
+                 ondragover="onDragOver(event,'perdido')"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,'perdido')">
+                <div class="col-empty"><div class="col-empty-icon">❌</div>Leads não convertidos</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL DE DETALHES -->
+<div class="modal-back" id="modal" onclick="closeModal(event)">
+    <div class="modal-box">
+        <div class="modal-top">
+            <h3 id="modal-title">Detalhes do Lead</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-field">
+                <label class="modal-label">Nome Completo</label>
+                <input class="modal-input" id="m-name" type="text" placeholder="Nome do paciente">
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">WhatsApp</label>
+                <input class="modal-input" id="m-phone" type="text" placeholder="85999999999">
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">Procedimento</label>
+                <input class="modal-input" id="m-proc" type="text" placeholder="Ex: Botox, Harmonização">
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">Horário Preferido</label>
+                <select class="modal-input modal-select" id="m-time">
+                    <option value="">— Selecionar —</option>
+                    <option value="Manhã">Manhã</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Manhã e Tarde">Manhã e Tarde</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">Observações</label>
+                <input class="modal-input" id="m-notes" type="text" placeholder="Notas internas sobre este lead...">
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">Etapa do Pipeline</label>
+                <select class="modal-input modal-select" id="m-stage">
+                    <option value="novo">📥 Novo Lead</option>
+                    <option value="contato">💬 Em Contato</option>
+                    <option value="agendado">📅 Agendado</option>
+                    <option value="realizado">✅ Realizado</option>
+                    <option value="perdido">❌ Perdido</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button class="modal-btn-primary" onclick="saveModal()">Salvar Alterações</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+'use strict';
+
+// ── STATE ──
+const STORAGE_KEY = 'sofia_crm_leads';
+let leads = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let dragId = null;
+let editingId = null;
+
+// ── BOOT: importar leads capturados pela Sofia ──
+function syncFromSofia() {
+    const sofiaLeads = JSON.parse(localStorage.getItem('sofia_leads_log') || '[]');
+    let added = 0;
+    sofiaLeads.forEach(sl => {
+        const exists = leads.some(l => l.phone === sl.phone && l.name === sl.name);
+        if (!exists && sl.name) {
+            leads.push({
+                id:        `lead_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+                name:      sl.name || '',
+                phone:     sl.phone || '',
+                procedure: sl.procedure || '',
+                time:      sl.time || '',
+                notes:     '',
+                stage:     'novo',
+                createdAt: sl.timestamp || new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}),
+                date:      sl.date || new Date().toLocaleDateString('pt-BR'),
+            });
+            added++;
+        }
+    });
+    if (added > 0) { save(); toast(`${added} lead(s) importado(s) da Sofia!`, 'info'); }
+}
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(leads)); }
+
+// ── RENDER ──
+function render() {
+    const cols = ['novo','contato','agendado','realizado','perdido'];
+    cols.forEach(stage => {
+        const col = document.getElementById(`col-${stage}`);
+        const colLeads = leads.filter(l => l.stage === stage);
+        document.getElementById(`count-${stage}`).textContent = colLeads.length;
+
+        if (!colLeads.length) {
+            const emptyMsgs = {novo:'📥 Leads da Sofia aparecem aqui',contato:'💬 Arraste leads para cá',agendado:'📅 Consultas marcadas',realizado:'🏆 Clientes atendidos',perdido:'❌ Leads não convertidos'};
+            col.innerHTML = `<div class="col-empty"><div class="col-empty-icon"></div>${emptyMsgs[stage]}</div>`;
+            return;
+        }
+
+        col.innerHTML = colLeads.map(l => buildCard(l)).join('');
+    });
+
+    updateROI();
+    updatePills();
+}
+
+function hoursAgo(dateStr, timeStr) {
+    try {
+        const [d,m,y] = (dateStr||'').split('/');
+        const [h,min] = (timeStr||'00:00').split(':');
+        const dt = new Date(y,m-1,d,h,min);
+        return Math.round((Date.now() - dt.getTime()) / 3600000);
+    } catch { return 0; }
+}
+
+function buildCard(l) {
+    const hrs = hoursAgo(l.date, l.createdAt);
+    const urgency = hrs < 2 ? 'hot' : hrs < 24 ? 'warm' : 'cool';
+    const urgencyTitle = hrs < 2 ? 'Novo! Contate agora' : hrs < 24 ? `${hrs}h atrás` : `${Math.floor(hrs/24)}d atrás`;
+    const initials = (l.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const waPhone = (l.phone||'').replace(/\D/g,'');
+    const waMsg = encodeURIComponent(`Olá ${l.name}! Sou da Clínica Prime. Vi que você tem interesse em ${l.procedure||'nossos procedimentos'}. Podemos conversar sobre o seu atendimento?`);
+    const nextLabel = {novo:'→ Contato',contato:'→ Agendar',agendado:'→ Realizado',realizado:'✓ Feito',perdido:'↩ Reativar'}[l.stage]||'Avançar';
+
+    return `
+    <div class="lead-card" draggable="true" id="card-${l.id}"
+         ondragstart="onDragStart('${l.id}')"
+         ondragend="onDragEnd()">
+        <div class="urgency-badge ${urgency}" title="${urgencyTitle}"></div>
+        <div class="card-name">
+            <div class="card-avatar">${initials}</div>
+            ${l.name || '—'}
+        </div>
+        <div class="card-tags">
+            ${l.procedure ? `<span class="tag tag-proc">💉 ${l.procedure}</span>` : ''}
+            ${l.time ? `<span class="tag tag-time">🕐 ${l.time}</span>` : ''}
+            <span class="tag tag-hours">${hrs < 1 ? 'Agora mesmo' : hrs < 24 ? `${hrs}h atrás` : `${Math.floor(hrs/24)}d atrás`}</span>
+        </div>
+        ${l.phone ? `<div class="card-phone">📱 ${l.phone}</div>` : ''}
+        ${l.notes ? `<div style="font-size:11px;color:var(--light-500);margin-bottom:8px;font-style:italic">📝 ${l.notes}</div>` : ''}
+        <div class="card-actions">
+            ${waPhone ? `<button class="card-btn card-btn-wa" onclick="openWA('${waPhone}','${waMsg}')" title="Abrir WhatsApp">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                WhatsApp
+            </button>` : ''}
+            <button class="card-btn card-btn-next" onclick="advanceLead('${l.id}')" title="${nextLabel}">
+                ${nextLabel}
+            </button>
+            <button class="card-btn card-btn-del" onclick="openModal('${l.id}')" title="Editar">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+        </div>
+    </div>`;
+}
+
+// ── DRAG & DROP ──
+function onDragStart(id) {
+    dragId = id;
+    setTimeout(() => { const el = document.getElementById(`card-${id}`); if(el) el.style.opacity = '0.4'; }, 0);
+}
+function onDragEnd() {
+    if (dragId) { const el = document.getElementById(`card-${dragId}`); if(el) el.style.opacity = '1'; }
+    dragId = null;
+    document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+}
+function onDragOver(e, stage) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function onDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function onDrop(e, stage) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    if (!dragId) return;
+    const lead = leads.find(l => l.id === dragId);
+    if (lead && lead.stage !== stage) {
+        lead.stage = stage;
+        save(); render();
+        toast(`Lead movido para "${stageLabel(stage)}"`, 'success');
+    }
+}
+
+// ── ADVANCE LEAD ──
+const STAGE_ORDER = ['novo','contato','agendado','realizado'];
+const STAGE_NEXT  = {novo:'contato',contato:'agendado',agendado:'realizado',perdido:'novo'};
+function advanceLead(id) {
+    const lead = leads.find(l => l.id === id);
+    if (!lead) return;
+    if (lead.stage === 'realizado') return;
+    const next = STAGE_NEXT[lead.stage] || 'contato';
+    lead.stage = next;
+    save(); render();
+    toast(`${lead.name} → ${stageLabel(next)}`, 'success');
+}
+function stageLabel(s) { return {novo:'Novo Lead',contato:'Em Contato',agendado:'Agendado',realizado:'Realizado',perdido:'Perdido'}[s]||s; }
+
+// ── WHATSAPP ──
+function openWA(phone, msg) {
+    window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
+}
+
+// ── ROI ──
+function updateROI() {
+    const total    = leads.length;
+    const realized = leads.filter(l => l.stage === 'realizado').length;
+    const revenue  = realized * 450; // ticket médio estimado R$450
+    const timeSaved= total * 0.25;   // 15min por lead
+
+    document.getElementById('roi-leads').textContent   = total;
+    document.getElementById('roi-conv').textContent    = realized;
+    document.getElementById('roi-revenue').textContent = `R$ ${revenue.toLocaleString('pt-BR')}`;
+    document.getElementById('roi-time').textContent    = timeSaved.toFixed(1) + 'h';
+}
+
+function updatePills() {
+    const total = leads.length;
+    const conv  = leads.filter(l => l.stage === 'realizado').length;
+    const rate  = total > 0 ? Math.round((conv/total)*100) : 0;
+    document.getElementById('pill-total').textContent = `${total} leads`;
+    document.getElementById('pill-conv').textContent  = `${rate}% conv.`;
+}
+
+// ── MODAL ──
+function openModal(id) {
+    editingId = id;
+    const l = leads.find(l => l.id === id);
+    if (!l) return;
+    document.getElementById('modal-title').textContent = `Editar: ${l.name}`;
+    document.getElementById('m-name').value  = l.name  || '';
+    document.getElementById('m-phone').value = l.phone || '';
+    document.getElementById('m-proc').value  = l.procedure || '';
+    document.getElementById('m-time').value  = l.time  || '';
+    document.getElementById('m-notes').value = l.notes || '';
+    document.getElementById('m-stage').value = l.stage || 'novo';
+    document.getElementById('modal').classList.add('open');
+}
+function closeModal(e) {
+    if (e && e.target !== document.getElementById('modal')) return;
+    document.getElementById('modal').classList.remove('open');
+    editingId = null;
+}
+function saveModal() {
+    const lead = leads.find(l => l.id === editingId);
+    if (!lead) return;
+    lead.name      = document.getElementById('m-name').value.trim();
+    lead.phone     = document.getElementById('m-phone').value.trim();
+    lead.procedure = document.getElementById('m-proc').value.trim();
+    lead.time      = document.getElementById('m-time').value;
+    lead.notes     = document.getElementById('m-notes').value.trim();
+    lead.stage     = document.getElementById('m-stage').value;
+    save(); render();
+    document.getElementById('modal').classList.remove('open');
+    toast('Lead atualizado!', 'success');
+}
+
+// ── CLEAR PERDIDOS ──
+function clearAll() {
+    if (!confirm('Remover todos os leads marcados como Perdido?')) return;
+    leads = leads.filter(l => l.stage !== 'perdido');
+    save(); render();
+    toast('Leads perdidos removidos.', 'info');
+}
+
+// ── TOAST ──
+function toast(msg, type='info') {
+    const icons = {success:'✅',info:'ℹ️',warning:'⚠️'};
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span>${icons[type]||'⚡'}</span><span>${msg}</span>`;
+    document.getElementById('toast-wrap').appendChild(t);
+    setTimeout(()=>t.remove(), 5000);
+}
+
+// ── BOOT ──
+syncFromSofia();
+render();
+
+// Auto-sync a cada 30s
+setInterval(syncFromSofia, 30000);
+</script>
+</body>
+</html>
