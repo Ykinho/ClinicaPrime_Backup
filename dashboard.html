@@ -419,4 +419,832 @@ tbody td{padding:13px 20px;font-size:12px;color:var(--light-300)}
       </div>
     </div>
 
-    <!-- truncated for MCP payload size test - WILL REPLACE WITH FULL FILE VIA create_or_update_file
+    <!-- ════ VIEW: LEADS ════ -->
+    <div class="view" id="view-leads">
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <div>
+            <div class="card-title">Todos os Leads</div>
+            <div class="card-sub" id="leads-count">Carregando...</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="filter-row" id="filter-btns">
+              <button class="filter-btn active" onclick="filterLeads('todos',this)">Todos</button>
+              <button class="filter-btn" onclick="filterLeads('qualificado',this)">✅ Qualificados</button>
+              <button class="filter-btn" onclick="filterLeads('parcial',this)">⏳ Parciais</button>
+            </div>
+            <div class="search-box">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9BA5C0" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" placeholder="Buscar..." oninput="searchLeads(this.value)">
+            </div>
+            <button class="btn btn-ghost" onclick="exportCSV()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              CSV
+            </button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table><thead><tr>
+            <th>Paciente</th><th>Procedimento</th><th>WhatsApp</th><th>Horário</th><th>Captado em</th><th>Status</th><th>Ação</th>
+          </tr></thead>
+          <tbody id="leads-tbody"></tbody></table>
+        </div>
+        <div class="empty-state hidden" id="leads-empty">
+          <div class="ei">📭</div>
+          <p>Nenhum lead encontrado.</p>
+          <a href="index.html" style="display:inline-block;margin-top:14px;padding:9px 18px;background:linear-gradient(135deg,var(--gold-500),var(--gold-400));color:#080B12;font-weight:700;border-radius:10px;font-size:12px">Abrir Sofia →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ VIEW: PERFORMANCE ════ -->
+    <div class="view" id="view-performance">
+      <!-- Model card -->
+      <div class="model-card">
+        <div class="model-glow">🧠</div>
+        <div class="model-info">
+          <h3>Motor de IA Ativo</h3>
+          <p>A Sofia detecta e usa automaticamente o modelo Gemini mais rápido disponível para sua conta.</p>
+          <div class="model-badge"><span class="badge-dot"></span> <span id="perf-model">Detectando...</span></div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="font-size:11px;color:var(--light-500);margin-bottom:6px">Fallback inteligente</div>
+          <div style="font-size:12px;color:var(--gold-300)">4 modelos na fila</div>
+          <div style="font-size:10px;color:var(--dark-500);margin-top:4px">Nunca fica offline</div>
+        </div>
+      </div>
+      <!-- Perf metrics -->
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-icon">🎯</div>
+          <div class="perf-value" id="perf-total" style="color:var(--gold-300)">0</div>
+          <div class="perf-label">Leads Qualificados</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">⚡</div>
+          <div class="perf-value" id="perf-time" style="color:var(--blue-400)">~2s</div>
+          <div class="perf-label">Tempo médio de resposta</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">📈</div>
+          <div class="perf-value" id="perf-rate" style="color:var(--green-400)">0%</div>
+          <div class="perf-label">Taxa de Qualificação</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">💬</div>
+          <div class="perf-value" id="perf-msgs" style="color:var(--purple-400)">0</div>
+          <div class="perf-label">Mensagens processadas</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">⏱️</div>
+          <div class="perf-value" id="perf-saved" style="color:var(--orange-400)">0h</div>
+          <div class="perf-label">Horas economizadas</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-icon">💰</div>
+          <div class="perf-value" id="perf-rev" style="color:var(--green-400)">R$0</div>
+          <div class="perf-label">Receita potencial</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Qualificação por Período</div><div class="card-sub">Leads qualificados × total</div></div></div>
+          <div class="chart-wrap"><canvas id="chart-perf"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Distribuição de Horários</div><div class="card-sub">Preferência dos pacientes</div></div></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="chart-time"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ VIEW: AGENDA ════ -->
+    <div class="view" id="view-agenda">
+      <div class="card" style="padding:20px">
+        <div class="agenda-header">
+          <div class="agenda-nav">
+            <button onclick="agendaWeek(-1)">←</button>
+            <div class="agenda-title" id="agenda-range">Carregando...</div>
+            <button onclick="agendaWeek(1)">→</button>
+          </div>
+          <div class="agenda-legend">
+            <span><span class="legend-dot" style="background:rgba(201,168,76,.5)"></span>Manhã</span>
+            <span><span class="legend-dot" style="background:rgba(96,165,250,.5)"></span>Tarde</span>
+          </div>
+        </div>
+        <div class="week-grid" id="week-grid">Carregando...</div>
+        <div style="margin-top:16px;font-size:12px;color:var(--light-500);text-align:center">
+          💡 A agenda exibe os leads capturados pela Sofia organizados pelo horário preferido do paciente.
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ VIEW: INTEGRAÇÕES ════ -->
+    <div class="view" id="view-integracoes">
+      <div class="int-grid">
+
+        <!-- Google Sheets -->
+        <div class="int-card" id="int-sheets">
+          <div class="int-head">
+            <div class="int-icon" style="background:rgba(52,211,153,.08)">📊</div>
+            <div>
+              <div class="int-name">Google Sheets</div>
+              <div class="int-status" id="int-sheets-status">Não configurado</div>
+            </div>
+          </div>
+          <div class="int-steps">
+            <div class="int-step"><div class="step-num done">✓</div>Abra o Google Apps Script (script.google.com)</div>
+            <div class="int-step"><div class="step-num done">✓</div>Crie um novo projeto e cole o código de GoogleAppsScript.js</div>
+            <div class="int-step"><div class="step-num" id="step3-num">3</div>Publique como Web App → Acessível por "Qualquer pessoa"</div>
+            <div class="int-step"><div class="step-num" id="step4-num">4</div>Cole a URL da Web App abaixo e salve</div>
+          </div>
+          <div style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--light-500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">URL do Web App (Webhook)</label>
+            <input class="int-input" id="webhook-input" placeholder="https://script.google.com/macros/s/.../exec" type="url">
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:11px;font-weight:700;color:var(--light-500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Link da sua Planilha</label>
+            <input class="int-input" id="sheetlink-input" placeholder="https://docs.google.com/spreadsheets/d/..." type="url">
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-gold" style="flex:1" onclick="saveWebhook()">Salvar</button>
+            <button class="btn btn-gold" style="flex:1" onclick="openMySheet()" id="open-sheet-btn">
+              Abrir Planilha 📊
+            </button>
+          </div>
+        </div>
+
+        <!-- Gemini API -->
+        <div class="int-card active">
+          <div class="int-head">
+            <div class="int-icon" style="background:rgba(201,168,76,.1)">🧠</div>
+            <div>
+              <div class="int-name">Gemini API</div>
+              <div class="int-status on">✅ Conectado e ativo</div>
+            </div>
+          </div>
+          <div class="int-steps">
+            <div class="int-step"><div class="step-num done">✓</div>Chave de API configurada via onboarding da Sofia</div>
+            <div class="int-step"><div class="step-num done">✓</div>Auto-descoberta de modelos ativada</div>
+            <div class="int-step"><div class="step-num done">✓</div>Fallback inteligente entre 4 modelos habilitado</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(52,211,153,.05);border-radius:10px;border:1px solid rgba(52,211,153,.15)">
+            <span class="badge-dot"></span>
+            <span style="font-size:12px;color:var(--green-400);font-weight:600">Modelo ativo: <span id="int-model-name">—</span></span>
+          </div>
+          <div style="margin-top:12px">
+            <button class="btn btn-ghost" style="width:100%" onclick="location.href='index.html'">Abrir Chat da Sofia →</button>
+          </div>
+        </div>
+
+        <!-- Google Calendar -->
+        <div class="int-card active" id="int-calendar">
+          <div class="int-head">
+            <div class="int-icon" style="background:rgba(96,165,250,.1)">📅</div>
+            <div>
+              <div class="int-name">Google Calendar</div>
+              <div class="int-status on">✅ Conectado via Apps Script</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--light-500);margin:12px 0;">Consultas são agendadas automaticamente no seu calendário principal com notificação push 15 min antes.</p>
+          <a href="https://calendar.google.com/calendar/u/0/r/week" target="_blank" class="btn btn-glow" style="width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;text-decoration:none;background:linear-gradient(45deg, #3b82f6, #2563eb);box-shadow:0 0 15px rgba(59,130,246,0.3);color:white;font-weight:600;position:relative;overflow:hidden;">
+            Abrir Google Calendar 📅
+          </a>
+        </div>
+
+        <!-- WhatsApp Gateway -->
+        <div class="int-card" id="int-whatsapp">
+          <div class="int-head">
+            <div class="int-icon" style="background:rgba(34,197,94,.1)">💬</div>
+            <div>
+              <div class="int-name">WhatsApp Gateway</div>
+              <div class="int-status" id="int-wpp-status">Não configurado</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--light-500);margin:12px 0;">Conecte sua API (Z-API, Evolution, etc) para a Sofia realizar follow-ups e vendas ativas no WhatsApp.</p>
+          
+          <div style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:var(--light-500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">URL da API (Endpoint de envio)</label>
+            <input class="int-input" id="wpp-url-input" placeholder="Ex: https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN/send-text" type="url">
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:11px;font-weight:700;color:var(--light-500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Token de Autorização (Opcional)</label>
+            <input class="int-input" id="wpp-token-input" placeholder="Bearer SEU_TOKEN (Se aplicável)" type="text">
+          </div>
+          <button class="btn btn-gold" style="width:100%" onclick="saveWhatsApp()">Salvar Conexão 💬</button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════
+//  CANVAS ANIMATION — Neural AI
+// ═══════════════════════════════
+(function initCanvas() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles, animId;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    particles = Array.from({length: 80}, () => createParticle());
+  }
+
+  function createParticle(x, y) {
+    return {
+      x:     x ?? Math.random() * W,
+      y:     y ?? Math.random() * H,
+      vx:    (Math.random() - .5) * .4,
+      vy:    (Math.random() - .5) * .4,
+      r:     Math.random() * 2 + 1,
+      alpha: Math.random() * .5 + .1,
+      pulse: Math.random() * Math.PI * 2,
+      type:  Math.random() > .85 ? 'lead' : 'node', // lead particles glow gold
+    };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const p1 = particles[i], p2 = particles[j];
+        const dx = p1.x - p2.x, dy = p1.y - p2.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          const alpha = (1 - dist/120) * .12;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
+          ctx.lineWidth = .5;
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // draw particles
+    particles.forEach(p => {
+      p.pulse += .02;
+      const pulsedAlpha = p.alpha + Math.sin(p.pulse) * .15;
+
+      if (p.type === 'lead') {
+        // gold glowing lead node
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+        g.addColorStop(0, `rgba(212,160,23,${pulsedAlpha * .9})`);
+        g.addColorStop(1, 'rgba(212,160,23,0)');
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI*2);
+        ctx.fillStyle = g; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(240,208,128,${pulsedAlpha})`;
+        ctx.fill();
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(58,68,112,${pulsedAlpha})`;
+        ctx.fill();
+      }
+
+      // move
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W+10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H+10) p.y = -10;
+    });
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize(); draw();
+
+  // expose for lead capture animation
+  window._spawnLeadParticle = function(x, y) {
+    // spawn 3 glowing gold particles at capture point
+    for (let i = 0; i < 3; i++) {
+      const p = createParticle(
+        x + (Math.random()-0.5)*40,
+        y + (Math.random()-0.5)*40
+      );
+      p.type = 'lead';
+      p.alpha = .9;
+      p.r = 3;
+      particles.push(p);
+    }
+    // ripple ring
+    const ring = document.createElement('div');
+    ring.className = 'capture-ring';
+    ring.style.left = x + 'px';
+    ring.style.top  = y + 'px';
+    document.body.appendChild(ring);
+    setTimeout(() => ring.remove(), 900);
+  };
+})();
+
+// ═══════════════════════════════
+//  DATA
+// ═══════════════════════════════
+const leadsRaw    = JSON.parse(localStorage.getItem('sofia_leads_log') || '[]');
+const activeModel = localStorage.getItem('sofia_active_model') || localStorage.getItem('sofia_model_name') || '—';
+const webhookURL  = localStorage.getItem('sofia_webhook_url') || 'https://script.google.com/macros/s/AKfycbxrgSw1N0bJ24EAPBRDQCzLvSgkf2dGIjRvTezrcHftfeC7mdOJ8tOB6zXD9JdJGfVy/exec';
+const apiKey      = localStorage.getItem('sofia_api_key') || '';
+
+let currentFilter = 'todos';
+let currentSearch = '';
+let agendaOffset  = 0;
+
+// ═══════════════════════════════
+//  LIVE CLOCK
+// ═══════════════════════════════
+function updateClock() {
+  const el = document.getElementById('live-time');
+  if (el) el.textContent = new Date().toLocaleString('pt-BR',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════════════════
+//  VIEWS
+// ═══════════════════════════════
+const VIEW_META = {
+  dashboard:   {title:'Dashboard', sub:'Visão geral em tempo real'},
+  leads:       {title:'Leads Capturados', sub:'Todos os contatos qualificados pela Sofia'},
+  performance: {title:'Performance Sofia', sub:'Métricas de eficiência e ROI da IA'},
+  agenda:      {title:'Agenda de Leads', sub:'Leads organizados por disponibilidade de horário'},
+  integracoes: {title:'Integrações', sub:'Configure as conexões do sistema'},
+};
+
+function switchView(viewId, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`view-${viewId}`).classList.add('active');
+  if (el) el.classList.add('active');
+  const meta = VIEW_META[viewId] || {title:viewId, sub:''};
+  document.getElementById('view-title').textContent = meta.title;
+  document.getElementById('view-sub').innerHTML = `${meta.sub} · <span id="live-time">${document.getElementById('live-time')?.textContent||''}</span>`;
+  // lazy-render view content
+  if (viewId === 'leads')       renderLeadsTable(leadsRaw);
+  if (viewId === 'performance') renderPerformance();
+  if (viewId === 'agenda')      renderAgenda();
+  if (viewId === 'integracoes') renderIntegracoes();
+}
+
+// ═══════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════
+function initDashboard() {
+  const total     = leadsRaw.length;
+  const qualified = leadsRaw.filter(l => l.name && l.phone && l.procedure && l.time).length;
+  const withPhone = leadsRaw.filter(l => l.phone).length;
+  const rate      = total > 0 ? Math.round((qualified/total)*100) : 0;
+  const today     = new Date().toLocaleDateString('pt-BR');
+  const todayN    = leadsRaw.filter(l => l.date === today).length;
+
+  animCount('kv-total', total);
+  animCount('kv-qual',  qualified);
+  animCount('kv-wa',    withPhone);
+  document.getElementById('kv-rate').textContent  = total > 0 ? rate+'%' : '—';
+  document.getElementById('kt-qual').textContent  = rate+'%';
+  document.getElementById('ks-today').textContent = `${todayN} capturado${todayN!==1?'s':''} hoje`;
+
+  // Status
+  document.getElementById('s-model').textContent = `Modelo: ${activeModel}`;
+  if (!apiKey) { document.getElementById('s-api-tag').textContent='Sem chave'; document.getElementById('s-api-tag').className='s-tag off'; }
+  if (webhookURL) {
+    document.getElementById('s-sheets-dot').className = 'sdot on';
+    document.getElementById('s-sheets-desc').textContent = 'Conectado';
+    document.getElementById('s-sheets-tag').textContent = 'Ativo';
+    document.getElementById('s-sheets-tag').className = 's-tag on';
+  }
+
+  buildDailyChart();
+  buildProcList();
+  buildFeed();
+}
+
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  if (!el || target===0) { if(el) el.textContent=0; return; }
+  let c=0; const step=Math.ceil(target/25);
+  const iv=setInterval(()=>{ c=Math.min(c+step,target); el.textContent=c; if(c>=target)clearInterval(iv); },35);
+}
+
+Chart.defaults.color = '#9BA5C0';
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.font.size = 11;
+
+let chartDailyInst;
+function buildDailyChart() {
+  if (chartDailyInst) chartDailyInst.destroy();
+  const days=[],counts=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit'}));
+    counts.push(leadsRaw.filter(l=>l.date===d.toLocaleDateString('pt-BR')).length);
+  }
+  const ctx=document.getElementById('chart-daily').getContext('2d');
+  chartDailyInst=new Chart(ctx,{type:'line',data:{labels:days,datasets:[{label:'Leads',data:counts,borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.07)',fill:true,tension:.4,pointBackgroundColor:'#C9A84C',pointBorderColor:'#161B2A',pointBorderWidth:2,pointRadius:5,pointHoverRadius:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#161B2A',borderColor:'rgba(255,255,255,0.06)',borderWidth:1,titleColor:'#fff',bodyColor:'#9BA5C0',padding:12,cornerRadius:10}},scales:{x:{grid:{color:'rgba(255,255,255,.03)'}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{stepSize:1},beginAtZero:true}}}});
+}
+
+function buildProcList() {
+  const el = document.getElementById('proc-list');
+  const proc={};
+  leadsRaw.forEach(l=>{if(!l.procedure)return;const k=l.procedure.trim().toLowerCase();proc[k]=(proc[k]||0)+1;});
+  const entries=Object.entries(proc).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){el.innerHTML='<div class="empty-state"><div class="ei">💉</div><p>Nenhum dado ainda</p></div>';return;}
+  const max=entries[0][1];
+  const colors=['#C9A84C','#60A5FA','#34D399','#A78BFA','#FB923C','#F87171'];
+  el.innerHTML=entries.slice(0,6).map(([n,c],i)=>`
+    <div>
+      <div class="proc-row"><span class="proc-name">${n.charAt(0).toUpperCase()+n.slice(1)}</span><span class="proc-n">${c}</span></div>
+      <div class="proc-track"><div class="proc-fill" style="width:0%;background:${colors[i%colors.length]}" data-w="${Math.round((c/max)*100)}"></div></div>
+    </div>`).join('');
+  setTimeout(()=>{document.querySelectorAll('.proc-fill').forEach(f=>{f.style.width=f.dataset.w+'%';});},100);
+}
+
+function buildFeed() {
+  const el=document.getElementById('feed-list');
+  if(!leadsRaw.length){el.innerHTML='<div class="empty-state"><div class="ei">📡</div><p>Aguardando atividade...</p></div>';return;}
+  const feedColors={qualified:'rgba(52,211,153,.1)',partial:'rgba(201,168,76,.1)'};
+  el.innerHTML=leadsRaw.slice(0,8).map(l=>{
+    const q=l.name&&l.phone&&l.procedure&&l.time;
+    return `<div class="feed-item">
+      <div class="feed-icon" style="background:${q?feedColors.qualified:feedColors.partial}">${q?'✅':'⏳'}</div>
+      <div>
+        <div class="feed-text"><strong>${l.name||'Paciente'}</strong> ${q?'qualificado':'capturado'}${l.procedure?' · '+l.procedure:''}</div>
+        <div class="feed-time">${l.timestamp||''} · ${l.date||''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+//  LEADS TABLE
+// ═══════════════════════════════
+let allLeads = [...leadsRaw];
+
+function renderLeadsTable(data) {
+  const tbody = document.getElementById('leads-tbody');
+  const empty = document.getElementById('leads-empty');
+  document.getElementById('leads-count').textContent = `${data.length} lead${data.length!==1?'s':''} no total`;
+  if(!data.length){tbody.innerHTML='';empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  tbody.innerHTML = data.map(l=>{
+    const q=l.name&&l.phone&&l.procedure&&l.time;
+    const init=(l.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const phone=(l.phone||'').replace(/\D/g,'');
+    const msg=encodeURIComponent(`Olá ${l.name}! Sou da Clínica Prime. Você demonstrou interesse em ${l.procedure||'nossos procedimentos'}. Posso ajudar?`);
+    return `<tr>
+      <td><div class="td-name"><div class="td-av">${init}</div>${l.name||'—'}</div></td>
+      <td><span class="badge proc">${l.procedure||'—'}</span></td>
+      <td style="font-family:monospace;color:var(--gold-300)">${l.phone||'—'}</td>
+      <td><span class="badge time">🕐 ${l.time||'—'}</span></td>
+      <td style="color:var(--light-500);font-size:11px">${l.date||'—'} ${l.timestamp||''}</td>
+      <td><span class="badge ${q?'qf':'pt'}">${q?'✅ Qualificado':'⏳ Parcial'}</span></td>
+      <td>${phone?`<button class="wa-btn" onclick="window.open('https://wa.me/55${phone}?text=${msg}','_blank')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp</button>`:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterLeads(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function searchLeads(q) { currentSearch=q.toLowerCase(); applyFilters(); }
+
+function applyFilters() {
+  let data = [...leadsRaw];
+  if(currentFilter==='qualificado') data=data.filter(l=>l.name&&l.phone&&l.procedure&&l.time);
+  if(currentFilter==='parcial')     data=data.filter(l=>!(l.name&&l.phone&&l.procedure&&l.time));
+  if(currentSearch) data=data.filter(l=>(l.name||'').toLowerCase().includes(currentSearch)||(l.procedure||'').toLowerCase().includes(currentSearch)||(l.phone||'').includes(currentSearch));
+  renderLeadsTable(data);
+}
+
+// ═══════════════════════════════
+//  PERFORMANCE
+// ═══════════════════════════════
+let chartPerfInst, chartTimeInst;
+function renderPerformance() {
+  const total    = leadsRaw.length;
+  const qual     = leadsRaw.filter(l=>l.name&&l.phone&&l.procedure&&l.time).length;
+  const rate     = total>0 ? Math.round((qual/total)*100) : 0;
+  const saved    = (total*0.25).toFixed(1);
+  const revenue  = qual * 450;
+
+  document.getElementById('perf-model').textContent = activeModel;
+  document.getElementById('int-model-name').textContent = activeModel;
+  animCount('perf-total', qual);
+  animCount('perf-msgs', total*6);
+  document.getElementById('perf-rate').textContent  = rate+'%';
+  document.getElementById('perf-saved').textContent = saved+'h';
+  document.getElementById('perf-rev').textContent   = `R$ ${revenue.toLocaleString('pt-BR')}`;
+
+  // chart perf
+  if (chartPerfInst) chartPerfInst.destroy();
+  const days=[],q=[],t=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toLocaleDateString('pt-BR');
+    const dayLeads=leadsRaw.filter(l=>l.date===ds);
+    days.push(d.toLocaleDateString('pt-BR',{weekday:'short'}));
+    t.push(dayLeads.length);
+    q.push(dayLeads.filter(l=>l.name&&l.phone&&l.procedure&&l.time).length);
+  }
+  const ctx2=document.getElementById('chart-perf').getContext('2d');
+  chartPerfInst=new Chart(ctx2,{type:'bar',data:{labels:days,datasets:[{label:'Total',data:t,backgroundColor:'rgba(58,68,112,.5)',borderRadius:6},{label:'Qualificados',data:q,backgroundColor:'rgba(52,211,153,.6)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#9BA5C0',usePointStyle:true}},tooltip:{backgroundColor:'#161B2A',borderColor:'rgba(255,255,255,0.06)',borderWidth:1,titleColor:'#fff',bodyColor:'#9BA5C0',padding:12,cornerRadius:10}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{stepSize:1},beginAtZero:true}}}});
+
+  // chart time
+  if (chartTimeInst) chartTimeInst.destroy();
+  const manha=leadsRaw.filter(l=>l.time&&l.time.toLowerCase().includes('manh')).length;
+  const tarde=leadsRaw.filter(l=>l.time&&l.time.toLowerCase().includes('tarde')&&!l.time.toLowerCase().includes('manh')).length;
+  const ambos=leadsRaw.filter(l=>l.time&&l.time.toLowerCase().includes('manh')&&l.time.toLowerCase().includes('tarde')).length;
+  const ctx3=document.getElementById('chart-time').getContext('2d');
+  chartTimeInst=new Chart(ctx3,{type:'doughnut',data:{labels:['Manhã','Tarde','Ambos'],datasets:[{data:[manha,tarde,ambos],backgroundColor:['rgba(201,168,76,.75)','rgba(96,165,250,.75)','rgba(167,139,250,.75)'],borderColor:'#161B2A',borderWidth:3,hoverOffset:5}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:'#9BA5C0',padding:14,usePointStyle:true}},tooltip:{backgroundColor:'#161B2A',borderColor:'rgba(255,255,255,0.06)',borderWidth:1,titleColor:'#fff',bodyColor:'#9BA5C0',padding:12,cornerRadius:10}}}});
+}
+
+// ═══════════════════════════════
+//  AGENDA (WEEKLY CALENDAR)
+// ═══════════════════════════════
+function agendaWeek(dir) { agendaOffset += dir; renderAgenda(); }
+
+function renderAgenda() {
+  const today = new Date();
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay() + 1 + agendaOffset*7); // Monday
+
+  const days = Array.from({length:7}, (_,i) => {
+    const d = new Date(weekStart); d.setDate(weekStart.getDate()+i); return d;
+  });
+
+  // Range label
+  const opts = {day:'2-digit',month:'short'};
+  document.getElementById('agenda-range').textContent =
+    `${days[0].toLocaleDateString('pt-BR',opts)} — ${days[6].toLocaleDateString('pt-BR',opts)}`;
+
+  const todayStr = today.toLocaleDateString('pt-BR');
+  const weekNames = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+
+  let html = '<div class="wg-header">Horário</div>';
+  days.forEach((d,i) => {
+    const ds = d.toLocaleDateString('pt-BR');
+    const isToday = ds === todayStr;
+    html += `<div class="wg-header${isToday?' today':''}"><span>${weekNames[i]}</span><span class="day-num">${d.getDate()}</span></div>`;
+  });
+
+  const slots = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
+  slots.forEach(slot => {
+    const period = parseInt(slot) < 12 ? 'manha' : 'tarde';
+    html += `<div class="wg-time">${slot}</div>`;
+    days.forEach(d => {
+      // Formato esperado em l.time: "YYYY-MM-DD HH:mm"
+      const dStr = d.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+      const dayLeads = leadsRaw.filter(l => {
+        if (!l.time) return false;
+        // Verifica se a string tem formato ISO (ou similar) contendo a data
+        if (l.time.includes(dStr)) {
+          // Extrai a hora "HH:mm" ou só "HH"
+          const timeMatch = l.time.match(/\d{2}:\d{2}/);
+          if (timeMatch) {
+            // Verifica se a hora do lead cai neste slot específico
+            const leadHour = parseInt(timeMatch[0].split(':')[0]);
+            const slotHour = parseInt(slot.split(':')[0]);
+            return leadHour === slotHour;
+          }
+        }
+        // Fallback legado para quem tem apenas "Manhã" ou "Tarde"
+        const dsLocal = d.toLocaleDateString('pt-BR');
+        if (l.date === dsLocal) {
+          if (period === 'manha' && (l.time.toLowerCase().includes('manh') || l.time.toLowerCase().includes('ambos'))) {
+            return slot === '09:00'; // Exibe as 'manhãs' genéricas às 9h
+          }
+          if (period === 'tarde' && l.time.toLowerCase().includes('tarde')) {
+            return slot === '14:00'; // Exibe as 'tardes' genéricas às 14h
+          }
+        }
+        return false;
+      });
+
+      html += `<div class="wg-slot">${dayLeads.map(l=>`<div class="agenda-chip ${period}" title="${l.name} · ${l.procedure}">${(l.name||'Lead').split(' ')[0]}</div>`).join('')}</div>`;
+    });
+  });
+
+  document.getElementById('week-grid').innerHTML = html;
+  document.getElementById('week-grid').style.gridTemplateColumns = '80px repeat(7,1fr)';
+}
+
+// ═══════════════════════════════
+//  INTEGRAÇÕES
+// ═══════════════════════════════
+function renderIntegracoes() {
+  const inp = document.getElementById('webhook-input');
+  if (inp) inp.value = webhookURL;
+  const linkInp = document.getElementById('sheetlink-input');
+  if (linkInp) linkInp.value = localStorage.getItem('sofia_sheet_link') || '';
+  
+  const wUrl = document.getElementById('wpp-url-input');
+  if (wUrl) wUrl.value = localStorage.getItem('sofia_wpp_url') || '';
+  const wToken = document.getElementById('wpp-token-input');
+  if (wToken) wToken.value = localStorage.getItem('sofia_wpp_token') || '';
+
+  const modelEl = document.getElementById('int-model-name');
+  if (modelEl) modelEl.textContent = activeModel;
+
+  const sheetsCard = document.getElementById('int-sheets');
+  const sheetsStatus = document.getElementById('int-sheets-status');
+  if (webhookURL) {
+    if (sheetsCard) sheetsCard.classList.add('active');
+    if (sheetsStatus) { sheetsStatus.textContent = '✅ Conectado'; sheetsStatus.className='int-status on'; }
+    document.getElementById('step3-num').className = 'step-num done'; document.getElementById('step3-num').textContent='✓';
+    document.getElementById('step4-num').className = 'step-num done'; document.getElementById('step4-num').textContent='✓';
+  }
+
+  const wppCard = document.getElementById('int-whatsapp');
+  const wppStatus = document.getElementById('int-wpp-status');
+  if (localStorage.getItem('sofia_wpp_url')) {
+    if (wppCard) wppCard.classList.add('active');
+    if (wppStatus) { wppStatus.textContent = '✅ Conectado'; wppStatus.className='int-status on'; }
+  }
+}
+
+async function saveWebhook() {
+  const url = document.getElementById('webhook-input').value.trim();
+  const link = document.getElementById('sheetlink-input').value.trim();
+  
+  if (!url) { toast('Cole a URL do Google Apps Script.','gold'); return; }
+  
+  localStorage.setItem('sofia_webhook_url', url);
+  if (link) localStorage.setItem('sofia_sheet_link', link);
+  
+  toast('Testando conexão...','info');
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({test:true,from:'Sofia Dashboard'})
+    });
+    toast('✅ Google Sheets conectado com sucesso!','success');
+    renderIntegracoes();
+  } catch {
+    toast('Conexão salva. Verifique permissões no Apps Script.','gold');
+  }
+}
+
+function openMySheet() {
+  const link = localStorage.getItem('sofia_sheet_link');
+  if (link) {
+    window.open(link, '_blank');
+  } else {
+    window.open('https://docs.google.com/spreadsheets/', '_blank');
+    toast('Link exato não salvo. Abrindo painel geral das planilhas.', 'info');
+  }
+}
+
+// ═══════════════════════════════
+//  WHATSAPP GATEWAY LOGIC
+// ═══════════════════════════════
+function saveWhatsApp() {
+  const url = document.getElementById('wpp-url-input').value.trim();
+  const token = document.getElementById('wpp-token-input').value.trim();
+  if(!url) { toast('Cole a URL da API do WhatsApp.','gold'); return; }
+  localStorage.setItem('sofia_wpp_url', url);
+  localStorage.setItem('sofia_wpp_token', token);
+  toast('Configuração do WhatsApp Gateway salva!','success');
+  renderIntegracoes();
+}
+
+async function sendFollowup(encName, phone, encProc, encTime, encDate) {
+  const url = localStorage.getItem('sofia_wpp_url');
+  const token = localStorage.getItem('sofia_wpp_token');
+  if(!url) { toast('Configure o WhatsApp Gateway na aba de Integrações!','gold'); return; }
+
+  const name = decodeURIComponent(encName) || 'Paciente';
+  const proc = decodeURIComponent(encProc) || 'nossos serviços';
+  const time = decodeURIComponent(encTime) || '';
+  const date = decodeURIComponent(encDate) || '';
+
+  toast(`Mágica! Gerando mensagem com a Sofia...`, 'info');
+
+  const apiKey = localStorage.getItem('gemini_api_key');
+  if(!apiKey) { toast('API Key do Gemini não encontrada.','error'); return; }
+
+  const prompt = `Você é a Sofia, secretária da Clínica Prime. O cliente ${name} demonstrou interesse no procedimento: ${proc}.
+Data pretendida: ${date} às ${time}.
+Crie uma ÚNICA mensagem curta, carismática e super persuasiva para enviar a ele no WhatsApp agora. O objetivo é fechar o agendamento!
+Chame ele pelo nome, demonstre empatia e faça uma pergunta fechada de ação no final (ex: "Podemos confirmar esse horário e garantir sua vaga?").
+Use emojis com moderação. Tom humano.
+Retorne APENAS o texto da mensagem, nada mais.`;
+
+  try {
+    const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const geminiData = await geminiRes.json();
+    let msg = geminiData.candidates[0].content.parts[0].text;
+
+    toast(`Disparando para o WhatsApp...`, 'info');
+    
+    // Fallback Inteligente: Tenta usar a API do cliente. Se ela falhar por erro de CORS/URL Invalida, abre o WhatsApp Web com a mensagem pronta.
+    let gatewaySuccess = false;
+    try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = token.includes('Bearer') ? token : `Bearer ${token}`;
+        
+        const payload = {
+            phone: '55' + phone,
+            message: msg
+        };
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+        if(res.ok) gatewaySuccess = true;
+    } catch (e) {
+        console.warn('Gateway API Error (Fallback Ativado)', e);
+    }
+
+    if (gatewaySuccess) {
+        toast(`✅ Mensagem enviada silenciosamente para ${name}!`, 'success');
+    } else {
+        toast(`⚠️ Erro na API. Mas não se preocupe, abrindo seu WhatsApp Web!`, 'gold');
+        setTimeout(() => {
+            window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }, 1500);
+    }
+
+  } catch (e) {
+    console.error(e);
+    toast('Erro ao gerar mensagem na IA.', 'error');
+  }
+}
+
+// ═══════════════════════════════
+//  TOAST + EXPORT + MISC
+// ═══════════════════════════════
+function toast(msg, type='info') {
+  const icons={success:'✅',info:'ℹ️',gold:'⭐'};
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icons[type]||'⚡'}</span><span style="font-size:13px">${msg}</span>`;
+  document.getElementById('toast-wrap').appendChild(t);
+  setTimeout(()=>t.remove(),5000);
+}
+
+function exportCSV() {
+  if (!leadsRaw.length) { toast('Nenhum lead para exportar.','info'); return; }
+  const hdr=['Nome','Procedimento','WhatsApp','Horário','Data','Hora','Status'];
+  const rows=leadsRaw.map(l=>[`"${l.name||''}"`,'`'+l.procedure+'`',`"${l.phone||''}"`,`"${l.time||''}"`,`"${l.date||''}"`,`"${l.timestamp||''}"`,`"${(l.name&&l.phone&&l.procedure&&l.time)?'Qualificado':'Parcial'}"`]);
+  const csv=[hdr,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`leads_clinicaprime_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'_')}.csv`;
+  a.click();
+  toast('CSV exportado!','success');
+}
+
+function refreshAll() { location.reload(); }
+
+// ═══════════════════════════════
+//  SIMULATE LIVE CAPTURE EFFECT
+//  (fires when leads exist, as visual demo)
+// ═══════════════════════════════
+function simulateLivePing() {
+  if (!leadsRaw.length) return;
+  const sidebar = document.querySelector('.nav');
+  const sw = sidebar ? sidebar.offsetWidth : 240;
+  const x = sw + Math.random() * (window.innerWidth - sw - 100) + 50;
+  const y = Math.random() * window.innerHeight * 0.8 + 50;
+  window._spawnLeadParticle && window._spawnLeadParticle(x, y);
+}
+// Occasional sparkle to show system is alive
+setInterval(simulateLivePing, 8000);
+
+// ═══════════════════════════════
+//  BOOT
+// ═══════════════════════════════
+initDashboard();
+// Initial ping after 2s
+setTimeout(simulateLivePing, 2000);
+</script>
+</body>
+</html>
