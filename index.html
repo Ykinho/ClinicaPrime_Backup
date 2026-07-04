@@ -1,1 +1,324 @@
-<!-- uploaded via batch - see repo -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Prime — Sofia IA | Atendimento Inteligente</title>
+    <meta name="description" content="Sofia, a assistente virtual inteligente da Clínica Prime. Atendimento 24/7 com IA para agendamentos, qualificação de leads e integração com Google Workspace.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TELA DE ONBOARDING / CONFIGURAÇÃO INICIAL   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="onboarding-overlay" class="onboarding-overlay">
+        <div class="onboarding-card">
+            <div class="onboarding-logo">
+                <div class="logo-ring">
+                    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="30" cy="30" r="28" stroke="url(#grad1)" stroke-width="2"/>
+                        <path d="M20 30 Q25 20 30 25 Q35 30 40 22" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="30" cy="38" r="5" fill="url(#grad1)"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#C9A84C"/>
+                                <stop offset="100%" stop-color="#F0D080"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="onboarding-steps">
+                <!-- Step 1 -->
+                <div class="onb-step active" id="step-1">
+                    <h2>Bem-vindo à <span class="gold-text">Sofia IA</span></h2>
+                    <p>A assistente virtual que transforma atendimento em conversões. Configure em menos de 60 segundos.</p>
+                    <div class="input-field">
+                        <label>🔑 Gemini API Key</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="api-key-input" placeholder="Cole sua API Key do Google AI Studio...">
+                            <button class="eye-btn" id="toggle-key-visibility" title="Mostrar/Ocultar">
+                                <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                        <small>Obtenha gratuitamente em <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></small>
+                    </div>
+                    <div class="input-field">
+                        <label>🤖 Modelo de IA</label>
+                        <select id="model-select">
+                            <option value="auto" selected>✨ Automático (Detecta o melhor para sua conta)</option>
+                        </select>
+                        <small style="color:var(--gold-500);margin-top:6px;display:block">💡 A Sofia detecta automaticamente qual modelo está disponível e mais rápido para sua chave.</small>
+                    </div>
+                    <button class="btn-primary" id="btn-next-step">Continuar →</button>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="onb-step" id="step-2">
+                    <h2>Integração <span class="gold-text">Google Sheets</span></h2>
+                    <p>Conecte o Sofia ao seu Google Sheets para salvar leads automaticamente. <em>(Opcional — pode configurar depois)</em></p>
+                    <div class="input-field">
+                        <label>🔗 URL do Web App (Google Apps Script)</label>
+                        <input type="url" id="webhook-input" placeholder="https://script.google.com/macros/s/.../exec">
+                        <small>Salva cada lead qualificado na sua planilha em tempo real.</small>
+                    </div>
+                    <div class="onb-btns">
+                        <button class="btn-secondary" id="btn-skip-webhook">Pular por agora</button>
+                        <button class="btn-primary" id="save-api-key">Ativar Sofia ✨</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="onb-progress">
+                <span class="dot active" id="prog-1"></span>
+                <span class="dot" id="prog-2"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- APLICAÇÃO PRINCIPAL                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="app-shell hidden" id="app-shell">
+
+        <!-- ── SIDEBAR ESQUERDA ── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="16" r="15" stroke="url(#sg)" stroke-width="1.5"/>
+                        <path d="M10 16 Q13 10 16 13 Q19 16 22 11" stroke="url(#sg)" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="16" cy="21" r="3" fill="url(#sg)"/>
+                        <defs><linearGradient id="sg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#C9A84C"/><stop offset="100%" stop-color="#F0D080"/></linearGradient></defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Clínica Prime</span>
+                    <span class="brand-sub">Sofia IA 2.0</span>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="kpi-grid">
+                <div class="kpi-card" id="kpi-today">
+                    <span class="kpi-icon">📊</span>
+                    <span class="kpi-value" id="kpi-leads-today">0</span>
+                    <span class="kpi-label">Leads Hoje</span>
+                </div>
+                <div class="kpi-card" id="kpi-total">
+                    <span class="kpi-icon">🎯</span>
+                    <span class="kpi-value" id="kpi-leads-total">0</span>
+                    <span class="kpi-label">Total Capturado</span>
+                </div>
+                <div class="kpi-card kpi-wide" id="kpi-conversion">
+                    <span class="kpi-icon">⚡</span>
+                    <span class="kpi-value" id="kpi-conv-rate">—</span>
+                    <span class="kpi-label">Status da Sessão</span>
+                </div>
+            </div>
+
+            <!-- Ficha do Paciente em Tempo Real -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Captura em Tempo Real</span>
+                </div>
+                <ul class="capture-list">
+                    <li>
+                        <span class="cl-label">Nome</span>
+                        <span class="cl-value pending" id="extracted-name">Aguardando…</span>
+                    </li>
+                    <li>
+                        <span class="cl-label">WhatsApp</span>
+                        <span class="cl-value pending" id="extracted-phone">Aguardando…</span>
+                    </li>
+                    <li>
+                        <span class="cl-label">Procedimento</span>
+                        <span class="cl-value pending" id="extracted-procedure">Aguardando…</span>
+                    </li>
+                    <li>
+                        <span class="cl-label">Horário</span>
+                        <span class="cl-value pending" id="extracted-time">Aguardando…</span>
+                    </li>
+                </ul>
+                <div class="completion-bar">
+                    <div class="completion-track">
+                        <div class="completion-fill" id="completion-fill" style="width:0%"></div>
+                    </div>
+                    <span class="completion-label" id="completion-label">0 / 4 campos</span>
+                </div>
+            </div>
+
+            <!-- Conexões -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                    <span>Integrações</span>
+                </div>
+                <div class="integration-list">
+                    <div class="int-item">
+                        <span class="int-dot active"></span>
+                        <span class="int-name">Gemini API</span>
+                        <span class="int-status" id="status-api-text">Conectado</span>
+                    </div>
+                    <div class="int-item">
+                        <span class="int-dot" id="sheets-dot"></span>
+                        <span class="int-name">Google Sheets</span>
+                        <span class="int-status" id="status-sheets">Pendente</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Leads -->
+            <div class="sidebar-card flex-grow" style="display: flex; flex-direction: column;">
+                <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Leads Recentes</span>
+                    </div>
+                    <input type="text" class="leads-search-input" placeholder="Pesquisar leads..." oninput="searchLogs(this.value)">
+                </div>
+                <div class="logs-list" id="logs-list">
+                    <p class="no-logs">Nenhum lead capturado ainda.</p>
+                </div>
+            </div>
+
+            <!-- Ações do Rodapé -->
+            <div class="sidebar-footer">
+                <button class="footer-btn" id="open-config-btn" title="Configurações">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.75 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Configurações
+                </button>
+                <button class="footer-btn" onclick="window.location.href='dashboard.html'" title="Ver Dashboard">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Ver Dashboard
+                </button>
+                <button class="footer-btn danger" id="new-chat-btn" title="Novo Atendimento">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Novo Atendimento
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── ÁREA DE CHAT PRINCIPAL ── -->
+        <main class="chat-main">
+            <!-- Header do Chat -->
+            <header class="chat-header">
+                <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle Sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <div class="chat-agent-info">
+                    <div class="agent-avatar-wrap">
+                        <img src="https://ui-avatars.com/api/?name=S&background=C9A84C&color=fff&rounded=true&bold=true&size=48" alt="Sofia" id="agent-avatar" class="agent-avatar">
+                        <span class="agent-online-dot"></span>
+                    </div>
+                    <div class="agent-meta">
+                        <h1 class="agent-name">Sofia</h1>
+                        <p class="agent-status" id="agent-status-text">Assistente Virtual • Online</p>
+                    </div>
+                </div>
+                <div class="chat-header-right">
+                    <div class="model-badge" id="model-badge">gemini-2.5-flash</div>
+                    <button class="icon-btn" id="clear-chat-btn" title="Limpar Conversa">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mensagens -->
+            <div class="chat-messages-wrap">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Mensagem de boas-vindas -->
+                    <div class="message-group ai-group">
+                        <div class="msg-avatar">
+                            <img src="https://ui-avatars.com/api/?name=S&background=C9A84C&color=fff&rounded=true&bold=true&size=32" alt="Sofia">
+                        </div>
+                        <div class="msg-bubble-wrap">
+                            <div class="msg-bubble ai-bubble">
+                                Olá! 👋 Sou a <strong>Sofia</strong>, assistente virtual da <strong>Clínica Prime</strong>.<br><br>
+                                Estou aqui para ajudá-lo a agendar procedimentos estéticos ou odontológicos com toda a conveniência que você merece. ✨<br><br>
+                                Com qual tratamento posso te ajudar hoje?
+                            </div>
+                            <span class="msg-time" id="welcome-time"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicador de Digitação -->
+            <div class="typing-row hidden" id="typing-indicator">
+                <div class="msg-avatar-sm">
+                    <img src="https://ui-avatars.com/api/?name=S&background=C9A84C&color=fff&rounded=true&bold=true&size=28" alt="Sofia">
+                </div>
+                <div class="typing-bubble">
+                    <span></span><span></span><span></span>
+                </div>
+                <span class="typing-label">Sofia está digitando...</span>
+            </div>
+
+            <!-- Área de Input -->
+            <div class="chat-input-zone">
+                <!-- Quick Replies -->
+                <div class="quick-replies" id="quick-replies">
+                    <button class="qr-chip" onclick="sendQuickReply('Quero agendar um procedimento')">📅 Agendar</button>
+                    <button class="qr-chip" onclick="sendQuickReply('Quero saber sobre Botox')">💉 Botox</button>
+                    <button class="qr-chip" onclick="sendQuickReply('Me fale sobre Harmonização Facial')">✨ Harmonização</button>
+                    <button class="qr-chip" onclick="sendQuickReply('Quero informações sobre Lentes de Contato Dental')">🦷 Odontologia</button>
+                    <button class="qr-chip" onclick="sendQuickReply('Qual o horário de funcionamento?')">🕐 Horários</button>
+                </div>
+
+                <div class="input-bar">
+                    <textarea id="user-input" placeholder="Digite sua mensagem..." rows="1" autocomplete="off"></textarea>
+                    <button id="send-button" class="send-btn" aria-label="Enviar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-disclaimer">Sofia é uma IA. Para emergências médicas, ligue 192 (SAMU).</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Modal de Configurações (Ajuste Rápido) -->
+    <div class="modal-backdrop hidden" id="config-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>⚙️ Configurações</h3>
+                <button class="modal-close" id="close-config-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-field">
+                    <label>Gemini API Key</label>
+                    <input type="password" id="api-key-input-modal" placeholder="AIzaSy...">
+                </div>
+                <div class="input-field">
+                    <label>Modelo</label>
+                    <select id="model-select-modal">
+                        <option value="auto">✨ Automático (Detecta o melhor)</option>
+                    </select>
+                    <small>Os modelos disponíveis para sua API Key são carregados automaticamente.</small>
+                </div>
+                <div class="input-field">
+                    <label>URL Google Apps Script</label>
+                    <input type="url" id="webhook-input-modal" placeholder="https://script.google.com/...">
+                    <small>Conecta ao Google Sheets para salvar leads automaticamente.</small>
+                </div>
+                <button class="btn-primary" id="save-config-modal">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
