@@ -1142,7 +1142,7 @@ async function sendFollowup(encName, phone, encProc, encTime, encDate) {
 
   toast(`Mágica! Gerando mensagem com a Sofia...`, 'info');
 
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = localStorage.getItem('sofia_api_key');
   if(!apiKey) { toast('API Key do Gemini não encontrada.','error'); return; }
 
   const prompt = `Você é a Sofia, secretária da Clínica Prime. O cliente ${name} demonstrou interesse no procedimento: ${proc}.
