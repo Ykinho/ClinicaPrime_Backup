@@ -444,7 +444,8 @@ function renderLogs() {
 // WEBHOOK
 // ─────────────────────────────────────────────
 async function sendLeadToWebhook(lead) {
-    addLeadToLog(lead);
+    const payload = { ...lead, date: todayStr(), timestamp: now() };
+    addLeadToLog(payload);
     if (!WEBHOOK_URL) {
         showToast('Lead qualificado! Configure o Google Sheets para salvar automaticamente.', '⚠️', 'warning');
         return;
@@ -455,7 +456,7 @@ async function sendLeadToWebhook(lead) {
             method: 'POST', 
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(lead)
+            body: JSON.stringify(payload)
         });
      showToast('Lead salvo no Google Sheets!', '✅', 'success');
     } catch (err) {

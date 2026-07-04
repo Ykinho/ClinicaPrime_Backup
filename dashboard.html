@@ -756,7 +756,12 @@ tbody td{padding:13px 20px;font-size:12px;color:var(--light-300)}
 //  DATA
 // ═══════════════════════════════
 const leadsRaw    = JSON.parse(localStorage.getItem('sofia_leads_log') || '[]');
-const activeModel = localStorage.getItem('sofia_active_model') || localStorage.getItem('sofia_model_name') || '—';
+function resolveGeminiModel() {
+  const stored = localStorage.getItem('sofia_active_model') || localStorage.getItem('sofia_model_name') || '';
+  if (stored && stored !== 'auto' && stored !== '—') return stored;
+  return 'gemini-1.5-flash';
+}
+const activeModel = resolveGeminiModel();
 const webhookURL  = localStorage.getItem('sofia_webhook_url') || 'https://script.google.com/macros/s/AKfycbxrgSw1N0bJ24EAPBRDQCzLvSgkf2dGIjRvTezrcHftfeC7mdOJ8tOB6zXD9JdJGfVy/exec';
 const apiKey      = localStorage.getItem('sofia_api_key') || '';
 
@@ -1153,13 +1158,18 @@ Use emojis com moderação. Tom humano.
 Retorne APENAS o texto da mensagem, nada mais.`;
 
   try {
-    const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`, {
+    const model = resolveGeminiModel();
+    const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
     });
     const geminiData = await geminiRes.json();
-    let msg = geminiData.candidates[0].content.parts[0].text;
+    const msg = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!msg) {
+      toast(geminiData?.error?.message || 'Erro ao gerar mensagem com a Sofia.', 'error');
+      return;
+    }
 
     toast(`Disparando para o WhatsApp...`, 'info');
     

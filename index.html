@@ -64,9 +64,20 @@
                     <p>Conecte o Sofia ao seu Google Sheets para salvar leads automaticamente. <em>(Opcional — pode configurar depois)</em></p>
                     <div class="input-field">
                         <label>🔗 URL do Web App (Google Apps Script)</label>
-                        <input type="url" id="webhook-input" placeholder="https://script.google.com/macros/s/.../exec">
-                        <small>Salva cada lead qualificado na sua planilha em tempo real.</small>
+                        <input type="url" id="webhook-input" placeholder="https://script.google.com/macros/s/.../exec" value="https://script.google.com/macros/s/AKfycbxrgSw1N0bJ24EAPBRDQCzLvSgkf2dGIjRvTezrcHftfeC7mdOJ8tOB6zXD9JdJGfVy/exec">
+                        <small>Salva cada lead qualificado na sua planilha em tempo real. Já vem com webhook demo ativo — troque pelo seu após configurar o Apps Script.</small>
                     </div>
+                    <details class="setup-guide" style="margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-size:12px;color:var(--light-400)">
+                        <summary style="cursor:pointer;font-weight:600;color:var(--gold-300)">📋 Configurar seu Google Sheets (5 min)</summary>
+                        <ol style="margin:10px 0 0 18px;line-height:1.7">
+                            <li>Crie uma planilha em <a href="https://sheets.google.com" target="_blank">sheets.google.com</a></li>
+                            <li>Abra <a href="https://script.google.com" target="_blank">script.google.com</a> → Novo projeto</li>
+                            <li>Cole o código de <a href="https://github.com/Ykinho/ClinicaPrime_Backup/blob/main/GoogleAppsScript.js" target="_blank">GoogleAppsScript.js</a></li>
+                            <li>Substitua <code>COLE_AQUI_A_URL_DA_SUA_PLANILHA</code> pela URL da planilha</li>
+                            <li>Implantar → Nova implantação → App da Web → "Qualquer pessoa"</li>
+                            <li>Cole a URL gerada acima e salve no <a href="dashboard.html">Dashboard → Integrações</a></li>
+                        </ol>
+                    </details>
                     <div class="onb-btns">
                         <button class="btn-secondary" id="btn-skip-webhook">Pular por agora</button>
                         <button class="btn-primary" id="save-api-key">Ativar Sofia ✨</button>
