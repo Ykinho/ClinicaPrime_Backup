@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sofia IA | A 1ª Inteligência Artificial para Clínicas</title>
+<meta name="description" content="Acabe com as faltas, zere a perda de leads e automatize o agendamento da sua clínica.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold-300:#F0D080;--gold-400:#D4A017;--gold-500:#C9A84C;--gold-600:#A88734;
+  --dark-950:#080B12;--dark-900:#0C1018;--dark-850:#111520;--dark-800:#161B2A;
+  --dark-700:#222A3F;--dark-600:#2D3555;--dark-500:#3A4470;
+  --light-300:#E2E6F0;--light-400:#C4CBDE;--light-500:#9BA5C0;
+  --green-400:#34D399;--red-400:#F87171;--blue-400:#60A5FA;--purple-400:#A78BFA;
+  --border:1px solid rgba(255,255,255,0.06);
+  --font:'Plus Jakarta Sans',sans-serif;--font-body:'Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--dark-950);color:#E8EBF4;font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ── NAVBAR ── */
+.navbar{position:fixed;top:0;width:100%;padding:20px 0;background:rgba(8,11,18,0.8);backdrop-filter:blur(20px);border-bottom:var(--border);z-index:100;transition:all .3s}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--font);font-size:20px;font-weight:800;color:#fff}
+.brand-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--gold-600),var(--gold-400));border-radius:12px;display:flex;align-items:center;justify-content:center;color:#080B12;font-size:20px;box-shadow:0 4px 20px rgba(201,168,76,.3)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-link{font-size:14px;font-weight:500;color:var(--light-400);transition:color .2s}
+.nav-link:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;font-family:var(--font);transition:all .2s;cursor:pointer;border:none}
+.btn-gold{background:linear-gradient(135deg,var(--gold-500),var(--gold-400));color:#080B12}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.35)}
+.btn-ghost{background:rgba(255,255,255,.05);color:#fff;border:var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+
+/* ── HERO ── */
+.hero{padding:160px 0 100px;position:relative;text-align:center;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(circle, rgba(201,168,76,.15) 0%, transparent 70%);pointer-events:none;z-index:-1}
+.badge-top{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold-400);font-size:13px;font-weight:700;margin-bottom:24px;animation:fadeDown .6s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.hero h1{font-family:var(--font);font-size:64px;font-weight:800;line-height:1.1;color:#fff;margin-bottom:24px;letter-spacing:-0.03em;animation:fadeUp .6s ease .1s both}
+.hero h1 span{background:linear-gradient(135deg,var(--gold-300),var(--gold-500));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:20px;color:var(--light-400);max-width:680px;margin:0 auto 40px;line-height:1.5;animation:fadeUp .6s ease .2s both}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:16px;animation:fadeUp .6s ease .3s both}
+.hero-img{margin-top:80px;position:relative;animation:fadeUp .8s ease .4s both}
+.hero-img img{width:100%;max-width:1000px;border-radius:24px;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 80px rgba(0,0,0,.5);display:block;margin:0 auto}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SOCIAL PROOF ── */
+.proof{padding:40px 0;border-bottom:var(--border);background:rgba(255,255,255,.01)}
+.proof-inner{display:flex;justify-content:center;gap:60px;align-items:center;flex-wrap:wrap;opacity:.6}
+.proof-item{font-family:var(--font);font-size:24px;font-weight:800;color:var(--light-400);letter-spacing:-0.05em}
+
+/* ── PAIN POINTS (PROBLEM) ── */
+.section{padding:120px 0}
+.sec-header{text-align:center;margin-bottom:60px}
+.sec-title{font-family:var(--font);font-size:42px;font-weight:800;color:#fff;margin-bottom:16px;letter-spacing:-0.02em}
+.sec-sub{font-size:18px;color:var(--light-400);max-width:600px;margin:0 auto}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pain-card{background:linear-gradient(180deg,rgba(248,113,113,.05),transparent);border:1px solid rgba(248,113,113,.15);border-radius:20px;padding:40px 32px;text-align:center;transition:transform .3s}
+.pain-card:hover{transform:translateY(-5px)}
+.pain-icon{font-size:48px;margin-bottom:20px}
+.pain-title{font-family:var(--font);font-size:22px;font-weight:700;color:#fff;margin-bottom:12px}
+.pain-desc{color:var(--light-400);line-height:1.6}
+.pain-stat{margin-top:24px;padding-top:24px;border-top:1px solid rgba(248,113,113,.1);font-size:14px;color:var(--red-400);font-weight:600}
+
+/* ── FEATURES (SOLUTION) ── */
+.feat-row{display:flex;align-items:center;gap:60px;margin-bottom:100px}
+.feat-row:nth-child(even){flex-direction:row-reverse}
+.feat-content{flex:1}
+.feat-tag{display:inline-block;padding:6px 12px;background:rgba(52,211,153,.1);color:var(--green-400);font-size:12px;font-weight:700;border-radius:8px;margin-bottom:16px}
+.feat-title{font-family:var(--font);font-size:36px;font-weight:800;color:#fff;margin-bottom:20px;line-height:1.2}
+.feat-desc{font-size:18px;color:var(--light-400);line-height:1.6;margin-bottom:32px}
+.feat-list{list-style:none}
+.feat-list li{display:flex;align-items:center;gap:12px;font-size:16px;color:#fff;font-weight:500;margin-bottom:16px}
+.feat-list li::before{content:'✓';width:24px;height:24px;background:rgba(52,211,153,.2);color:var(--green-400);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.feat-visual{flex:1;background:var(--dark-850);border:var(--border);border-radius:24px;padding:40px;position:relative;overflow:hidden;min-height:400px;display:flex;align-items:center;justify-content:center;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+
+/* Mockup UI Elements */
+.mockup-chat{background:var(--dark-800);border:var(--border);border-radius:16px;width:100%;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,.5);overflow:hidden}
+.m-header{background:var(--dark-900);padding:16px;display:flex;align-items:center;gap:12px;border-bottom:var(--border)}
+.m-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-600),var(--gold-400));display:flex;align-items:center;justify-content:center;color:#080B12;font-weight:800;font-family:var(--font)}
+.m-body{padding:20px;display:flex;flex-direction:column;gap:12px}
+.m-msg{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.4;max-width:85%}
+.m-msg.bot{background:rgba(201,168,76,.1);color:var(--gold-300);align-self:flex-start;border-bottom-left-radius:4px}
+.m-msg.user{background:var(--dark-700);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+
+.mockup-crm{width:100%;display:flex;gap:12px;transform:rotate(-5deg) scale(1.1)}
+.m-col{background:var(--dark-850);border:var(--border);border-radius:12px;padding:12px;flex:1}
+.m-card{background:var(--dark-800);border:var(--border);border-radius:8px;padding:12px;margin-top:10px}
+.m-line{height:6px;border-radius:3px;background:var(--dark-600);margin-bottom:6px}
+
+/* ── ROI CALCULATOR ── */
+.roi-section{background:linear-gradient(180deg,var(--dark-900),var(--dark-950));border-top:var(--border);border-bottom:var(--border);position:relative}
+.roi-box{background:var(--dark-850);border:1px solid rgba(201,168,76,.3);border-radius:24px;padding:48px;box-shadow:0 24px 80px rgba(201,168,76,.08);display:flex;gap:48px;align-items:center}
+.roi-inputs{flex:1;display:flex;flex-direction:column;gap:24px}
+.roi-field label{display:block;font-size:14px;font-weight:600;color:var(--light-400);margin-bottom:8px}
+.roi-field input{width:100%;background:var(--dark-900);border:1px solid var(--dark-600);border-radius:12px;padding:16px;color:#fff;font-size:18px;font-family:var(--font);font-weight:700;outline:none;transition:border-color .2s}
+.roi-field input:focus{border-color:var(--gold-500)}
+.roi-result{flex:1;background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:40px;text-align:center}
+.roi-result h4{font-size:16px;color:var(--gold-400);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.roi-value{font-family:var(--font);font-size:56px;font-weight:800;color:var(--gold-300);line-height:1;margin-bottom:12px}
+.roi-desc{color:var(--light-400);font-size:15px;line-height:1.5}
+
+/* ── CTA ── */
+.cta{text-align:center;padding:120px 0;background:radial-gradient(circle at center, rgba(201,168,76,.1) 0%, transparent 60%)}
+.cta h2{font-family:var(--font);font-size:48px;font-weight:800;color:#fff;margin-bottom:24px;letter-spacing:-0.02em}
+.cta p{font-size:20px;color:var(--light-400);max-width:600px;margin:0 auto 40px}
+
+/* ── FOOTER ── */
+.footer{padding:40px 0;border-top:var(--border);text-align:center;color:var(--dark-500);font-size:14px}
+
+@media(max-width:900px){
+  .hero h1{font-size:42px}
+  .grid-3{grid-template-columns:1fr}
+  .feat-row,.feat-row:nth-child(even){flex-direction:column}
+  .roi-box{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <div class="brand">
+      <div class="brand-icon">S</div>
+      Sofia IA
+    </div>
+    <div class="nav-links">
+      <a href="#solucao" class="nav-link">A Solução</a>
+      <a href="#roi" class="nav-link">Calculadora de ROI</a>
+      <a href="index.html" class="btn btn-ghost" style="padding:8px 16px;font-size:13px">Testar Chatbot</a>
+      <a href="dashboard.html" class="btn btn-gold" style="padding:8px 16px;font-size:13px">Ver Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="badge-top">✨ A primeira IA feita por e para Clínicas</div>
+    <h1>A recepcionista que <span>nunca dorme,</span><br>nunca erra e vende mais.</h1>
+    <p>Acabe com o "vou ver e te aviso". A Sofia atende em 2 segundos, qualifica pacientes, agenda consultas e recupera leads perdidos automaticamente.</p>
+    <div class="hero-btns">
+      <a href="index.html" class="btn btn-gold" style="padding:16px 32px;font-size:16px">Ver Sofia em Ação →</a>
+      <a href="#roi" class="btn btn-ghost" style="padding:16px 32px;font-size:16px">Calcular meu ROI</a>
+    </div>
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80" alt="Dashboard da Clínica" style="opacity:0.6;filter:sepia(0.3) hue-rotate(180deg) brightness(0.8) contrast(1.2)">
+    </div>
+  </div>
+</section>
+
+<div class="proof">
+  <div class="container proof-inner">
+    <div class="proof-item">ODONTOPRIME</div>
+    <div class="proof-item">BELLE CLINIC</div>
+    <div class="proof-item">SANTÉ MEDICAL</div>
+    <div class="proof-item">ESTÉTICA VIVA</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="sec-header">
+      <div class="badge-top" style="background:rgba(248,113,113,.1);color:var(--red-400);border-color:rgba(248,113,113,.2)">O Problema</div>
+      <h2 class="sec-title">Você está perdendo dinheiro agora.</h2>
+      <p class="sec-sub">O modelo tradicional de recepção não funciona na era da resposta imediata.</p>
+    </div>
+    <div class="grid-3">
+      <div class="pain-card">
+        <div class="pain-icon">👻</div>
+        <h3 class="pain-title">A Síndrome do No-Show</h3>
+        <p class="pain-desc">Pacientes esquecem consultas. Sua cadeira fica vazia e seu especialista parado, custando caro por hora.</p>
+        <div class="pain-stat">Em média 25% de faltas nas clínicas.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">⏳</div>
+        <h3 class="pain-title">Vazamento de Leads</h3>
+        <p class="pain-desc">Se você demora mais de 5 minutos para responder um WhatsApp, o paciente agenda na clínica concorrente.</p>
+        <div class="pain-stat">78% compram de quem responde primeiro.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🤯</div>
+        <h3 class="pain-title">Equipe Sobrecarregada</h3>
+        <p class="pain-desc">Sua recepção passa o dia inteiro respondendo "qual o horário de funcionamento?" em vez de focar no paciente presencial.</p>
+        <div class="pain-stat">15h por semana gastas com tarefas manuais.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="solucao" style="background:rgba(255,255,255,.01);border-top:var(--border)">
+  <div class="container">
+    <div class="feat-row">
+      <div class="feat-content">
+        <div class="feat-tag">Atendimento 24/7</div>
+        <h2 class="feat-title">Respostas humanas, inteligência artificial.</h2>
+        <p class="feat-desc">A Sofia conversa como um especialista da sua clínica. Ela entende o contexto, responde dúvidas sobre procedimentos e conduz o paciente até o agendamento.</p>
+        <ul class="feat-list">
+          <li>Responde em menos de 2 segundos.</li>
+          <li>Treinada com o tom de voz da sua clínica.</li>
+          <li>Qualifica o lead antes de passar para a equipe.</li>
+        </ul>
+      </div>
+      <div class="feat-visual">
+        <div class="mockup-chat">
+          <div class="m-header">
+            <div class="m-av">S</div>
+            <div>
+              <div style="color:#fff;font-size:14px;font-weight:700">Sofia</div>
+              <div style="color:var(--green-400);font-size:11px">Online</div>
+            </div>
+          </div>
+          <div class="m-body">
+            <div class="m-msg user">Gostaria de saber sobre aplicação de Botox. Qual o valor?</div>
+            <div class="m-msg bot">Olá! O Botox é excelente para suavizar linhas de expressão. Como o tratamento é personalizado, o valor varia. Gostaria de agendar uma avaliação gratuita nesta semana?</div>
+            <div class="m-msg user">Pode ser na quinta de manhã!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feat-row">
+      <div class="feat-content">
+        <div class="feat-tag" style="background:rgba(96,165,250,.1);color:var(--blue-400)">CRM Integrado</div>
+        <h2 class="feat-title">O controle total do seu funil de pacientes.</h2>
+        <p class="feat-desc">Esqueça o WhatsApp bagunçado. Cada conversa vira um card no seu CRM Kanban, onde você vê exatamente quem é quente, quem agendou e quem sumiu.</p>
+        <ul class="feat-list">
+          <li>Kanban de vendas visual (Novo → Agendado).</li>
+          <li>Botão One-Click para chamar no WhatsApp.</li>
+          <li>Métricas de conversão em tempo real.</li>
+        </ul>
+        <a href="crm.html" class="btn btn-ghost" style="margin-top:16px">Ver CRM →</a>
+      </div>
+      <div class="feat-visual">
+        <div class="mockup-crm">
+          <div class="m-col" style="border-top:3px solid var(--blue-400)">
+            <div style="color:var(--blue-400);font-size:11px;font-weight:700;margin-bottom:8px">NOVO LEAD</div>
+            <div class="m-card"><div class="m-line" style="width:40%"></div><div class="m-line" style="width:70%"></div></div>
+            <div class="m-card"><div class="m-line" style="width:50%"></div><div class="m-line" style="width:60%"></div></div>
+          </div>
+          <div class="m-col" style="border-top:3px solid var(--purple-400);transform:translateY(-10px)">
+            <div style="color:var(--purple-400);font-size:11px;font-weight:700;margin-bottom:8px">AGENDADO</div>
+            <div class="m-card" style="border-color:var(--gold-400)"><div class="m-line" style="width:80%;background:var(--gold-400)"></div><div class="m-line" style="width:40%"></div></div>
+          </div>
+          <div class="m-col" style="border-top:3px solid var(--green-400)">
+            <div style="color:var(--green-400);font-size:11px;font-weight:700;margin-bottom:8px">REALIZADO</div>
+            <div class="m-card"><div class="m-line" style="width:60%"></div><div class="m-line" style="width:50%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section roi-section" id="roi">
+  <div class="container">
+    <div class="sec-header">
+      <h2 class="sec-title">Quanto a Sofia vai te dar de lucro?</h2>
+      <p class="sec-sub">Descubra quanto dinheiro você está deixando na mesa por mês com leads não respondidos e cadeiras vazias.</p>
+    </div>
+    <div class="roi-box">
+      <div class="roi-inputs">
+        <div class="roi-field">
+          <label>Novos leads (contatos) por mês</label>
+          <input type="number" id="calc-leads" value="200" oninput="calculateROI()">
+        </div>
+        <div class="roi-field">
+          <label>Ticket Médio (R$ por procedimento)</label>
+          <input type="number" id="calc-ticket" value="800" oninput="calculateROI()">
+        </div>
+        <div class="roi-field">
+          <label>Sua conversão atual (%)</label>
+          <input type="number" id="calc-conv" value="15" oninput="calculateROI()">
+        </div>
+      </div>
+      <div class="roi-result">
+        <h4>Aumento de Receita Estimado</h4>
+        <div class="roi-value" id="calc-result">R$ 24.000</div>
+        <div class="roi-desc">Ao usar a Sofia para responder em segundos e automatizar follow-ups, clínicas aumentam a conversão em média <strong>15% a 25% absolutos</strong>.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2>Pronto para lotar sua agenda?</h2>
+    <p>A tecnologia que antes era apenas de grandes redes, agora no WhatsApp da sua clínica.</p>
+    <a href="index.html" class="btn btn-gold" style="padding:20px 40px;font-size:18px">Começar Agora — Ver Demo</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="brand" style="justify-content:center;margin-bottom:16px">
+      <div class="brand-icon" style="width:24px;height:24px;font-size:12px;border-radius:6px">S</div>
+      Sofia IA
+    </div>
+    <p>© 2024 Clínica Prime / Sofia IA. Desenvolvido para clínicas de alto padrão.</p>
+  </div>
+</footer>
+
+<script>
+function calculateROI() {
+  const leads = parseFloat(document.getElementById('calc-leads').value) || 0;
+  const ticket = parseFloat(document.getElementById('calc-ticket').value) || 0;
+  const boost = 0.15; 
+  const extraRevenue = leads * boost * ticket;
+  document.getElementById('calc-result').textContent = extraRevenue.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL', maximumFractionDigits: 0});
+}
+calculateROI();
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('.navbar');
+  if (window.scrollY > 50) {
+    nav.style.padding = '12px 0';
+    nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+  } else {
+    nav.style.padding = '20px 0';
+    nav.style.boxShadow = 'none';
+  }
+});
+</script>
+
+</body>
+</html>
